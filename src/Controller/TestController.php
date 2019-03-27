@@ -35,6 +35,7 @@ class TestController extends AbstractController
         $tags = ["dev", "gaming", "cooking"];
         try {
             $this->clean($manager);
+            $manager->setMode(CypherRequester::MODE_BATCH);
             $user = new User();
             $user->setFirstName("Laurent");
             $user->setLastName("Aubertin");
@@ -50,9 +51,23 @@ class TestController extends AbstractController
                 unset($tag);
                 unset($userTag);
             }
+            $manager->flush();
             return new Response("Done");
         } catch (Exception $e) {
             return new Response($e->getMessage());
         }
+    }
+
+    /**
+     * @param CypherRequester $manager
+     * @return Response
+     * @throws \ReflectionException
+     * @Route("/read")
+     */
+    public function read(CypherRequester $manager)
+    {
+        $data = $manager->getNodesBy(Tag::class, []);
+        var_dump($data);
+        return new Response("Done");
     }
 }
